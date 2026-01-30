@@ -11,8 +11,9 @@
 - git files won't be generate if you run `cargo new` inside a git repo. to override `cargo new --vcs=git`
 - `cargot.toml` - tom's Obvious Minimal Language
 - `cargo run`- build and run  | if file isn't changed it won't rebuild
-- `cargo check` - only ch3cks if executable can be made
+- `cargo check` - only checks if executable can be made
 - `cargo build --release`
+- binary and library `--lib` library
 
 == Guessing Game
 - rust has standard set of libraries (prelude)
@@ -164,3 +165,258 @@ fn main() {
 }
 ```
 
+
+== Ownership in Rust
+- discipline for safety ensuring
+- Safety is the absence of undefined behaviour
+- rust checks for errors in compile-time
+- Operations on Memory | valid for data structures that lives on `heap`
+
+- *heap is very slow so Cloning/ Copying doesn't happen when we pass the variables to fn*
+\
+=== Rust Memory(RAM , Bytes) Model
+- Variables live on stack or frames. Frames = mapping from variables to values in single scope
+
+- Ownership rules:
+  - when the owner gets out of scope the memory gets cleared
+
+- Borrowing rules
+  - There can only be one mutable reference but multiple immutable references
+  - mutable references
+  - immutable references
+
+- Ownership rule for `vec` and `string` is strict as they can change the length during runtime
+- when `str` gets out from scope
+
+```rust
+let mut name = String::new("Rohit");
+let s2 = &mut name;
+  // 1. cannot borrow `name` as immutable because it is also borrowed as mutable
+  //    immutable borrow occurs here [E0502]
+let s3 = &name;
+let s4 = &name;
+let s5 = &name;
+
+
+
+// now name ownership is transferred here so you cannot use it later
+// can go to the dangling pointer issue if both things point to one (owns one data in heap?)
+get_length(name);
+
+// so you can either get it back from the function and reuse it or use a ref/ borrow ?
+// giving and getting back
+let (length, name) = get_length(name);
+```
+
+- The following code compiles ?
+```rust
+let mut s1 = String::new("Rohit");
+let ref1 = &mut s1;
+ref1.push_str("Jung"); // mut variable ends here lifetime?
+//--- but you cannot use ref1 after this, following code is invalid
+let ref2 = &s1;
+println!("{}", ref2);
+```
+
+=== Structs
+
+- similar to classes
+- among member functions, static functions doesn't use `(&self)`, you can call them by `Struct::func()`
+- are they stored in stack or heap ? Heap variables(`len pointer cap`) on heap and stack one on stack
+- similar to how you cannot call static functions on object in `js`, you cannot call the static functions on struct instance
+
+=== Enum
+
+- `enum Iden { } | Iden::Value`;
+- you can use `match {}`
+```rust
+enum Shape {
+  Circle(f32),
+  Square(f32),
+  Rect(f32, f32)
+}
+
+// later in code
+match s {
+  Shape::Circle(radius) => PI * radius * radius,
+  Shape::Square(side) =>  side * side,
+  Shape::Rect(length, breadth) => length * breadth,
+}
+```
+
+=== Error and None Handling
+
+- using `Result` type: `Result::Ok or Result::Err`
+- unwrap ignores the error ?  `unwrap` use it at start when the process should panic if not provided
+
+- using `Option` type: `Option::None or Option::Some`
+
+=== External Packages
+
+- `cargo add <package-name>`
+- `Cargo.toml` - contains dependencies versioning (similar to `package.json`)
+- `Chrono` - to use `Datetime`
+- other packages - `dotenv`, `thiserror`, `sqlx`, `uuid`, `tui`
+
+== Generics and Trait bounds
+
+- write function to add two numbers `u32`  or `f32`
+```rust
+// since we are doing an addition but rust must be sure that the types can be added
+// hence we add a trait bound
+// if the trait Add is not implemented for type T then this won't work
+fn sum<T: Add<Output = T>>(a: T, b: T) -> T {
+    a + b
+}
+
+fn display_elements<T: std::fmt::Display>(a: T, b: T) {
+    // to print the type must have the display trait
+    println!("{}", a);
+    println!("{}", b);
+}
+
+// structs using generics
+struct Rect<T> {
+  width: T,
+  height: T
+}
+
+// you can either but you have to write for all types
+impl Rect<f32> {}
+// or
+//impl<T> is defining the generic Rect<T> is using the generic
+impl<T> Rect<T> {
+  fn add(&self) -> T {
+     self.height * self.width
+  }
+}
+```
+
+=== Traits
+
+- Similar to interfaces in Java and JS
+- abstract classes ?
+```rust
+trait Shape {
+  fn area(&self) -> f32;
+}
+
+// implements the Shape Trait
+// similar to : class Rect extends Shape
+impl Shape for Rect {
+  fn area(&self) -> f32 {}
+}
+
+fn print_area_of_shape<T: Shape>(s: T) {
+  // but how do you know area is implemented ? by trait
+  return s.area();
+}
+
+fn get_area<T: Shape> (s: T) -> u32 {
+  return s.area();
+}
+//or
+fn get_area (s: impl Shape) -> u32 {
+  return s.area();
+}
+```
+- interface vs type in js - Can be implemented by class
+
+=== Annotations and decorators
+- modify code behaviour in declarative way without changing the core logic of function or class
+- `@Get()`, `@Post()` in nest js or in fast API
+
+=== Macros
+- macros allow `metaprogrammming` - programs that allow to write other program
+- concept is similar to annotations
+- but macros spit out code(expands out to) during the compile time `cpp has this concept`
+- to see this intermediary file you can use `cargo-expand`
+- much more flexible than function `variable args`, can be expanded to anything, `[]` can be used
+
+==== Types of macro
+- Declarative macro
+  - most common type of macros, easier to write
+  - replace code with different code during `compile time`
+  - match to different `() => { }`
+  - ```rust
+    macro_rules! say_hello {
+      () => {
+        println!("Hello World");
+      }
+    }
+    ```
+- Procedural macro
+  - `#[derive(Debug)]`
+  - `{}` - display (for user, prettier) `{:?}` - debug
+  - ```rust
+      pub macro Debug($item:item) {}
+    ```
+  - 3 types of procedural macros
+    + Derive Like - `#derive[Trait]` - Derive certain trait for type
+    + attribute like - `#route["GET"]`
+    + function like - wants access to token streams and more complex else use `declarative`
+
+- implement `Display` and `Debug` yourself
+- *heap is very slow so Cloning/ Copying doesn't happen when we pass the variables to fn*
+- if the variable has `Copy` trait, copy the variable over (meaning it's in stack)
+- `clone()` is expensive; its on data type that implement `Clone`
+```rust
+// since both are stack variables ideally User should be on stack
+// and no ownership rules should be applied
+#[derive(Debug)]
+// if you have this it doesn't apply the ownership rules
+// you cannot implement Copy if the struct has String or something that doesn't implement Copy
+// #[derive(Debug, Copy, Clone)]
+struct User {
+  is_male: bool,
+  age: u32
+}
+
+
+fn main() {
+  let u1 = User{
+    is_male: true,
+    age: 21,
+  }
+
+  let u2 = u1;
+  // now you cannot use the u1 further in this code
+  // ownership rules : but that shouldn't happen unless you derive Copy and Clone trait
+  println!("{:?} {:?}", u1, u2)
+}
+```
+\
+=== Lifetimes
+
+- a construct that compiler uses to ensure all the borrows are valid
+```rust
+fn main() {
+  let str1 = String::from("short");
+  let ans;
+  {
+    let str2 = String::from("longest");
+    ans = longest_string(&str1, &str2);
+  }
+  // if ans points to str2 then there will be dangling pointer
+  // as str2 goes out of scope and is cleared out
+  println!("{}", ans);
+}
+
+// using lifetimes
+fn longest_string<'a, 'b>(s1: &'a String, s2: &'b String) -> &'a String {
+  // but this signature won't be valid if you return the smaller one
+  // we need to somehow return the longest lifetime
+  return s1;
+}
+// so either do  | it will consider the worst case (the smaller one)
+fn longest_string<'a>(s1: &'a String, s2: &'a String) -> &'a String { }
+// or do
+fn longest_string<'a, 'b>(s1: &'a String, s2: &'b String) -> &'b String
+where
+    'a: 'b, // means 'a outlives 'b
+{}
+
+// when we might need different lifetimes
+// here we for sure know that s3 won't be used then
+fn longest_string<'a, 'b>(s1: &'a String, s2: &'a String, s3: &'b String) -> &'a String { }
+```
