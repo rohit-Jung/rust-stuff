@@ -1,21 +1,21 @@
-== Rust
+## Rust
 
 - ahead of time compiled language meaning the compiled code can run without having rust in a machine
 - *rustaceans*
 
-== rustc
+## rustc
 - a rust compiler
 
-== cargo
+## cargo
 - build system and package manager for rust(similar to npm in ts ecosystem)
-- git files won't be generate if you run `cargo new` inside a git repo. to override `cargo new --vcs=git`
+- git files won't be generate if you run `cargo new` inside a git repo. to override `cargo new --vcs#git`
 - `cargot.toml` - tom's Obvious Minimal Language
 - `cargo run`- build and run  | if file isn't changed it won't rebuild
 - `cargo check` - only checks if executable can be made
 - `cargo build --release`
 - binary and library `--lib` library
 
-== Guessing Game
+## Guessing Game
 - rust has standard set of libraries (prelude)
 - if the type isn't in prelude you have to bring it in scope (import it)
 - `String` - growable UTF-8 encoded bit of text by std. library
@@ -38,28 +38,26 @@
 // if you want a immediate output flush the stdout yourself
 io::stdout().flush().unwrap();
 ```
-== Programming Concepts
+## Programming Concepts
 
-=== Variables and mutability
+### Variables and mutability
 
 - by default every variable is `immutable`(once a value is bound you cannot change) in rust
 - use `mut` to make it mutable
-\
 - constants are always immutable | a value computed at runtime cannot be set as constant (UPPERCASE_WITH_UNDERSCORES)
 - `const` can be used in global space unlike `let`
-\
 - declaring a var with same name as prev var - `Shadowing`
 - using shadowing we can perform few transformations to value without marking it as `mut`
 - we can also change the type of variable; see docs for example
 - thus spares us from having to come up with different names, such as spaces_str and spaces_num
 ```rust
-let spaces = "  " // this is string(&str)
-let spaces = spaces.len(); // this is u32(usize)
+let spaces # "  " // this is string(&str)
+let spaces # spaces.len(); // this is u32(usize)
 ```
 
-=== Data Types
+### Data Types
 
-==== Scalar Types
+#### Scalar Types
 - Integer
   - usigned and signed (`u` and `i`)
   - both available for 8, 26, 34, 64, 128 bits
@@ -80,40 +78,40 @@ let spaces = spaces.len(); // this is u32(usize)
 - *panicking* - when program exits with error
 - compiling in `--release` mode doesn't include integer overflow panic checks, it will `wrap`(256 becomes 0) but this depends on compiler mode
 
-==== Floating-Point Types
+#### Floating-Point Types
 - `f64` and `f32`(default)
 
-==== Numeric Operations
+#### Numeric Operations
 - every operation is supported
-- int division by default ( -5 / 3 = -1 )
+- int division by default ( -5 / 3 # -1 )
 
-==== Boolean type
+#### Boolean type
 - `bool`: true or false
 
-==== Char type
+#### Char type
 - within single quotes
 - four bytes in size | represents Unicode Scalar Value more than ASCII
 
-=== Compound types
+### Compound types
 - Tuple
 ```rust
-let tup = (500, 6.4, 1);
-let (x, y, z) = tup; // destructuring
+let tup # (500, 6.4, 1);
+let (x, y, z) # tup; // destructuring
 // or tup.x typ.y
 println!("The value of y is: {y}");
 
-let mut x: (i32, i32) = (1, 2);
-x.0 = 0;
-x.1 += 5;
+let mut x: (i32, i32) # (1, 2);
+x.0 # 0;
+x.1 +# 5;
 ```
 
 - Array
   - Unlike Tuple every element must be of same type
   - fixed size, stored on stack
-  - `let arr: [i32; 3] = [1, 2, 3]`
+  - `let arr: [i32; 3] # [1, 2, 3]`
   - In many low-level languages, this kind of check is not done, and when you provide an incorrect index, invalid memory can be accessed. Rust protects you against this kind of error by immediately exiting instead of allowing the memory access and continuing.
 
-=== Functions
+### Functions
 - uses snake_case convention
 - rust doesn't care if you define fn before or after the main (`just in scope`)
 - parameters, concrete values - arguments | requires type annotations
@@ -124,15 +122,15 @@ x.1 += 5;
   - expressions doesn't have `;` at the end, if they have that is a statement
   - ```rust
     fn five(x: i32) -> i32 {
-      let y = {
-        let x = 3;
+      let y # {
+        let x # 3;
         x + 1 // here there is no semicolon
       }
       y // here also
     }
     ```
 
-=== Control flow and comments
+### Control flow and comments
 - comments uses `//` or `/* */`
 - Rust does not have a concept of "truthy" or "falsy" values.
 - no brackets required in `if condition { }`
@@ -143,39 +141,39 @@ x.1 += 5;
 - `Range - (1..4)`
 ```rust
 fn main() {
-    let mut count = 0;
+    let mut count # 0;
     'counting_up: loop {
-        println!("count = {count}");
-        let mut remaining = 10;
+        println!("count # {count}");
+        let mut remaining # 10;
 
         loop {
-            println!("remaining = {remaining}");
-            if remaining == 9 {
+            println!("remaining # {remaining}");
+            if remaining ## 9 {
                 break; // breaks inner loop
             }
-            if count == 2 {
+            if count ## 2 {
                 break 'counting_up; // breaks outer loop also
             }
-            remaining -= 1;
+            remaining -# 1;
         }
 
-        count += 1;
+        count +# 1;
     }
-    println!("End count = {count}");
+    println!("End count # {count}");
 }
 ```
 
 
-== Ownership in Rust
+## Ownership in Rust
 - discipline for safety ensuring
 - Safety is the absence of undefined behaviour
 - rust checks for errors in compile-time
 - Operations on Memory | valid for data structures that lives on `heap`
 
 - *heap is very slow so Cloning/ Copying doesn't happen when we pass the variables to fn*
-\
-=== Rust Memory(RAM , Bytes) Model
-- Variables live on stack or frames. Frames = mapping from variables to values in single scope
+
+### Rust Memory(RAM , Bytes) Model
+- Variables live on stack or frames. Frames # mapping from variables to values in single scope
 
 - Ownership rules:
   - when the owner gets out of scope the memory gets cleared
@@ -189,13 +187,13 @@ fn main() {
 - when `str` gets out from scope
 
 ```rust
-let mut name = String::new("Rohit");
-let s2 = &mut name;
+let mut name # String::new("Rohit");
+let s2 # &mut name;
   // 1. cannot borrow `name` as immutable because it is also borrowed as mutable
   //    immutable borrow occurs here [E0502]
-let s3 = &name;
-let s4 = &name;
-let s5 = &name;
+let s3 # &name;
+let s4 # &name;
+let s5 # &name;
 
 
 
@@ -205,27 +203,27 @@ get_length(name);
 
 // so you can either get it back from the function and reuse it or use a ref/ borrow ?
 // giving and getting back
-let (length, name) = get_length(name);
+let (length, name) # get_length(name);
 ```
 
 - The following code compiles ?
 ```rust
-let mut s1 = String::new("Rohit");
-let ref1 = &mut s1;
+let mut s1 # String::new("Rohit");
+let ref1 # &mut s1;
 ref1.push_str("Jung"); // mut variable ends here lifetime?
 //--- but you cannot use ref1 after this, following code is invalid
-let ref2 = &s1;
+let ref2 # &s1;
 println!("{}", ref2);
 ```
 
-=== Structs
+### Structs
 
 - similar to classes
 - among member functions, static functions doesn't use `(&self)`, you can call them by `Struct::func()`
 - are they stored in stack or heap ? Heap variables(`len pointer cap`) on heap and stack one on stack
 - similar to how you cannot call static functions on object in `js`, you cannot call the static functions on struct instance
 
-=== Enum
+### Enum
 
 - `enum Iden { } | Iden::Value`;
 - you can use `match {}`
@@ -238,34 +236,34 @@ enum Shape {
 
 // later in code
 match s {
-  Shape::Circle(radius) => PI * radius * radius,
-  Shape::Square(side) =>  side * side,
-  Shape::Rect(length, breadth) => length * breadth,
+  Shape::Circle(radius) #> PI * radius * radius,
+  Shape::Square(side) #>  side * side,
+  Shape::Rect(length, breadth) #> length * breadth,
 }
 ```
 
-=== Error and None Handling
+### Error and None Handling
 
 - using `Result` type: `Result::Ok or Result::Err`
 - unwrap ignores the error ?  `unwrap` use it at start when the process should panic if not provided
 
 - using `Option` type: `Option::None or Option::Some`
 
-=== External Packages
+### External Packages
 
 - `cargo add <package-name>`
 - `Cargo.toml` - contains dependencies versioning (similar to `package.json`)
 - `Chrono` - to use `Datetime`
 - other packages - `dotenv`, `thiserror`, `sqlx`, `uuid`, `tui`
 
-== Generics and Trait bounds
+## Generics and Trait bounds
 
 - write function to add two numbers `u32`  or `f32`
 ```rust
 // since we are doing an addition but rust must be sure that the types can be added
 // hence we add a trait bound
 // if the trait Add is not implemented for type T then this won't work
-fn sum<T: Add<Output = T>>(a: T, b: T) -> T {
+fn sum<T: Add<Output # T>>(a: T, b: T) -> T {
     a + b
 }
 
@@ -292,7 +290,7 @@ impl<T> Rect<T> {
 }
 ```
 
-=== Traits
+### Traits
 
 - Similar to interfaces in Java and JS
 - abstract classes ?
@@ -322,25 +320,25 @@ fn get_area (s: impl Shape) -> u32 {
 ```
 - interface vs type in js - Can be implemented by class
 
-=== Annotations and decorators
+### Annotations and decorators
 - modify code behaviour in declarative way without changing the core logic of function or class
 - `@Get()`, `@Post()` in nest js or in fast API
 
-=== Macros
+### Macros
 - macros allow `metaprogrammming` - programs that allow to write other program
 - concept is similar to annotations
 - but macros spit out code(expands out to) during the compile time `cpp has this concept`
 - to see this intermediary file you can use `cargo-expand`
 - much more flexible than function `variable args`, can be expanded to anything, `[]` can be used
 
-==== Types of macro
+#### Types of macro
 - Declarative macro
   - most common type of macros, easier to write
   - replace code with different code during `compile time`
-  - match to different `() => { }`
+  - match to different `() #> { }`
   - ```rust
     macro_rules! say_hello {
-      () => {
+      () #> {
         println!("Hello World");
       }
     }
@@ -374,28 +372,27 @@ struct User {
 
 
 fn main() {
-  let u1 = User{
+  let u1 # User{
     is_male: true,
     age: 21,
   }
 
-  let u2 = u1;
+  let u2 # u1;
   // now you cannot use the u1 further in this code
   // ownership rules : but that shouldn't happen unless you derive Copy and Clone trait
   println!("{:?} {:?}", u1, u2)
 }
 ```
-\
-=== Lifetimes
+### Lifetimes
 
 - a construct that compiler uses to ensure all the borrows are valid
 ```rust
 fn main() {
-  let str1 = String::from("short");
+  let str1 # String::from("short");
   let ans;
   {
-    let str2 = String::from("longest");
-    ans = longest_string(&str1, &str2);
+    let str2 # String::from("longest");
+    ans # longest_string(&str1, &str2);
   }
   // if ans points to str2 then there will be dangling pointer
   // as str2 goes out of scope and is cleared out
@@ -420,3 +417,5 @@ where
 // here we for sure know that s3 won't be used then
 fn longest_string<'a, 'b>(s1: &'a String, s2: &'a String, s3: &'b String) -> &'a String { }
 ```
+
+#### 

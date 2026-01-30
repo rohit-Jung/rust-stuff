@@ -1,4 +1,4 @@
-== Serde
+## Serde
 
 - popular serialization and deserialization framework in rust
 - you cannot transfer struct / JSON over the network | its either bytes or string(also bytes)
@@ -14,7 +14,7 @@ serde_json = ""
 - `serde_json::to_string(s)`
 - `let u: Result<User, serde_json::Error> = serde_json::from_str(s)`
 
-== Borsh
+## Borsh
 - *Binary Object Representation Serializer for Hashing*
 - bunch of deterministic bytes
 - *NEAR Protocol*
