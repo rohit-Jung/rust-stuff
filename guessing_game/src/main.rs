@@ -1,5 +1,8 @@
 use rand::Rng;
-use std::{cmp::Ordering, io::{self, Write}};
+use std::{
+    cmp::Ordering,
+    io::{self, Write},
+};
 
 fn main() {
     println!("Guessing Game!");
