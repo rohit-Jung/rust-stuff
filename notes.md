@@ -3,6 +3,49 @@
 - ahead of time compiled language meaning the compiled code can run without having rust in a machine
 - _rustaceans_
 
+## printing
+
+- `format!()` - write formatted text to string
+- `print!()` - format! to `io::StdOut`
+- `println!()` - print! with a new line appended
+- `eprint!()` - same as print but `io::Stderr`
+- pretty printing - `{:#?}`
+
+```rust
+println!("{0}, this is {1}. {1}, this is {0}", "Alice", "Bob");
+println!("{number:>5}", number=1); // "     1" or pad it with 0
+// As can named arguments.
+println!("{subject} {verb} {object}",
+         object="the lazy dog",
+         subject="the quick brown fox",
+         verb="jumps over");
+// {:b} {:o} {:x}
+
+// Debug and Display trait are what should be implemented to print
+// Display automatically applies ToSTring() that lets us conver tot type String
+```
+
+### Debug and Display trait
+
+- we can easily derive this unlike the Display trait
+- all `std` ones has it
+- for binary `fmt::Binary` must be implemented ?
+
+```rust
+use std::fmt;
+
+struct Structure(i32);
+
+// To use the `{}` marker, the trait `fmt::Display` must be implemented
+// manually for the type.
+impl fmt::Display for Structure {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        //  Note that `write!` uses syntax which is very similar to `println!`.
+        write!(f, "{}", self.0)
+    }
+}
+```
+
 ## rustc
 
 - a rust compiler
@@ -99,6 +142,10 @@ let spaces # spaces.len(); // this is u32(usize)
 - within single quotes
 - four bytes in size | represents Unicode Scalar Value more than ASCII
 
+#### Unit Type
+
+- The unit type (), whose only possible value is an empty tuple: ()
+
 ### Compound types
 
 - Tuple
@@ -177,12 +224,46 @@ fn main() {
 
 ## Ownership in Rust
 
-- discipline for safety ensuring
+- discipline for safety ensuring -**A foundational goal of Rust is to ensure that your programs never have undefined behavior**
 - Safety is the absence of undefined behaviour
 - rust checks for errors in compile-time
 - Operations on Memory | valid for data structures that lives on `heap`
+- Other Programs: Garbage Collection and Manual Memory Management while rust has **ownership rules**
 
+- Stack and heap: parts of memory available to program during runtime
+  - Stack: Structured memory (LIFO) data with fixed size
+  - Heap: Less Organized | allocating - getting a pointer to heap space
+  - heap is slower to access because you have to follow a pointer to get there
+
+- no duplicate and unused data on heap and keeping track of what code use what data on heap - Ownership
+
+```typst
+- Each value has an owner
+- There can only be one owner at a time
+- when owner goes out of scope, the value gets dropped
+```
+
+- **String and Vec**
+- when variable goes out of scope function is called `drop`
+- this pattern of deallocating resources at the end of items lifetime is called `Resource Acquisition Is Initialization (RAII).` in cpp
+- `double free error`: when two variables pointing to same memory on heap try to free
+- _**shallow copy, it’s known as a move.**_
+- if a type has `Drop` trait rust won't let us annotate that with `Copy` trait
+
+- _**in function the ownership gets transferred, so you either return the value from function or clone it or pass a ref only**_
 - _heap is very slow so Cloning/ Copying doesn't happen when we pass the variables to fn_
+
+<br/>
+
+- Variables lives in frames. Frame - mapping of variables to values
+- the sequence of frames is called stack
+- Rust provides a construct called `Box` for putting data on the heap
+
+> Box deallocation principle (fully correct): If a variable owns a box, when Rust deallocates the variable’s frame, then Rust deallocates the box’s heap memory.
+
+> Moved heap data principle: if a variable x moves ownership of heap data to another variable y, then x cannot be used after the move.
+
+### Referencing and Borrowing
 
 ### Rust Memory(RAM , Bytes) Model
 
@@ -236,6 +317,18 @@ println!("{}", ref2);
 - among member functions, static functions doesn't use `(&self)`, you can call them by `Struct::func()`
 - are they stored in stack or heap ? Heap variables(`len pointer cap`) on heap and stack one on stack
 - similar to how you cannot call static functions on object in `js`, you cannot call the static functions on struct instance
+- unit struct
+
+```rust
+// the field is unnamed
+pub struct Json<T>(pub T)
+
+// data: Json<URl>
+// data.0.url
+// pub struct Json<T> {
+//     field: T
+// }
+```
 
 ### Enum
 
