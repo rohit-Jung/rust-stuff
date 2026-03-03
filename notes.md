@@ -570,3 +570,11 @@ adder = { path = "../adder/"}
 ```
 
 - go routine lighter version of threads
+
+## Rustlings ?
+
+- `arr.to_vec` || `vec::from(arr)` || `arr.into_iter().collect()` || `vec.extend_from_slice(&arr)`
+- `input.iter().map(|element| element * 2).collect()` or either create a vec and push in it
+- `let (des, like) = tuple`
+- `.is_alphabetic(), .is_numeric()`
+- `[1; 100] and vec![1; 100]`
